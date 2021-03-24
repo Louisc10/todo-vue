@@ -1,20 +1,20 @@
 <template>
   <div id="app">
-    <!-- <img src="./assets/logo.png"> -->
-    <!-- <HelloWorld/> -->
-    <TodoList/>
+    <router-view/>
   </div>
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld'
 import TodoList from './components/TodoList'
+import Register from './components/Register'
 
 export default {
   name: 'App',
   components: {
     HelloWorld,
     TodoList,
+    Register
   }
 }
 </script>
