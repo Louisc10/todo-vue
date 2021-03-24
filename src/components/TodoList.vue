@@ -91,6 +91,8 @@ export default {
   },
   computed:{
     anyRemaining(){
+      if(this.todos.length == 0)
+        return true;
       return this.remaining != 0;
     },
     remaining(){
