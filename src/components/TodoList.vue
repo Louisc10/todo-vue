@@ -4,16 +4,48 @@
       Testing TodoList
     </h1>
     <input type="text" v-model="newTodo" placeholder="What need to do" class="todo-input" @keyup.enter="addTodo">
-    <div v-for="(todo, index) in todos" :key="todo.id" class="todo-item">
+
+    <div v-for="(todo, index) in filteredTodo" :key="todo.id" class="todo-item">
       <div class="todo-item-left">
-        <!-- <input type="checkbox" v-model="todo.completed"> -->
-        <div class="todo-item-label" v-if="!todo.editing" @dblclick="editTodo(todo)">
+        <input type="checkbox" v-model="todo.completed">
+        <div class="todo-item-label" :class="{completed : todo.completed}" v-if="!todo.editing" @dblclick="editTodo(todo)">
           {{todo.title}}
         </div>
-        <input type="text" class="todo-item-input" @keyup.enter="updateTodo(todo)" v-if="todo.editing" v-model="todo.title">
+        <input type="text" class="todo-item-input" @keyup.enter="updateTodo(todo)" @keyup.esc="cancleUpdate(todo)" @blur="updateTodo(todo)" v-if="todo.editing" v-model="todo.title" v-focus>
       </div>
       <div class="remove-item" @click="removeTodo(index)">
         &times;
+      </div>
+    </div>
+
+    <div class="extra-panel">
+      <div>
+        <label>
+          <input type="checkbox" :checked="!anyRemaining" @change="checkAllTodos">
+          Check All
+        </label>
+      </div>
+      <div>
+        {{ remaining }} todo(s) left
+      </div>
+    </div>
+
+    <div class="extra-panel">
+      <div>
+        <button :class="{ active: filter == 'all' }" @click="filter = 'all'">
+          All
+        </button>
+        <button :class="{ active: filter == 'active' }" @click="filter = 'active'">
+          Active
+        </button>
+        <button :class="{ active: filter == 'complete' }" @click="filter = 'complete'">
+          Completed
+        </button>
+      </div>
+      <div>
+        <button v-if="showClearComplete" @click="deleteComplete">
+          Delete Completed
+        </button>
       </div>
     </div>
   </div>
@@ -26,6 +58,8 @@ export default {
     return {
       newTodo: '',
       idForTodo: 4,
+      beforeEditCache: '',
+      filter: 'all',
       todos:[
         {
           'id' : 1,
@@ -48,9 +82,39 @@ export default {
       ],
     }
   },
+  directives:{
+    focus:{
+      inserted: function(el) {
+        el.focus();
+      }
+    }
+  },
+  computed:{
+    anyRemaining(){
+      return this.remaining != 0;
+    },
+    remaining(){
+      return this.todos.filter(todo => !todo.completed).length;
+    },
+    filteredTodo(){
+      if(this.filter == 'all'){
+        return this.todos;
+      }
+      else if(this.filter == 'active'){
+        return this.todos.filter(todo => !todo.completed);
+      }
+      else if(this.filter == 'complete'){
+        return this.todos.filter(todo => todo.completed);
+      }
+      return this.todos;
+    },
+    showClearComplete(){
+      return this.todos.filter(todo => todo.completed).length != 0;
+    }
+  },
   methods:{
     addTodo(){
-      if(this.newTodo.trim() != ''){
+      if(this.newTodo.trim().length != 0){
         this.todos.push({
           id: this.idForTodo,
           title: this.newTodo,
@@ -65,13 +129,27 @@ export default {
       this.newTodo = '';
     },
     editTodo(todo){
+      this.beforeEditCache = todo.title;
       todo.editing = true;
     },
     updateTodo(todo){
+      if(todo.title.trim() == ''){
+        todo.title = this.beforeEditCache;
+      }
+      todo.editing = false;
+    },
+    cancleUpdate(todo){
+      todo.title = this.beforeEditCache;
       todo.editing = false;
     },
     removeTodo(index){
       this.todos.splice(index, 1);
+    },
+    checkAllTodos(){
+      this.todos.forEach(todo => todo.completed = event.target.checked) ;
+    },
+    deleteComplete(){
+      this.todos = this.todos.filter(todo => !todo.completed);
     }
   }
 }
@@ -84,10 +162,10 @@ export default {
     padding: 10px 20px;
     font-size: 12px;
     margin: 10px;
+  }
 
-    &:focus{
-      outline: 0;
-    }
+  .todo-input:focus{
+    outline: 0;
   }
 
   .todo-item{
@@ -100,9 +178,10 @@ export default {
 
   .remove-item{
     cursor: pointer;
-    &:hover{
-      color: black;
-    }
+  }
+
+  .remove-item:hover{
+    color: black;
   }
 
   .todo-item-left{
@@ -123,9 +202,27 @@ export default {
     padding: 10px;
     width: 100%;
     border: solid 1px #aaa;
+  }
 
-    &:focus{
-      outline: none;
-    }
+  .todo-item-input:focus{
+    outline: none;
+  }
+
+  .completed{
+    text-decoration: line-through;
+    color: #aaa;
+  }
+
+  .extra-panel{
+    border-top: solid 1px black;
+    display: flex;
+    justify-content: space-between;
+    margin: 5px;
+    padding: 5px;
+  }
+
+  .active{
+    background-color: darkblue;
+    color: white;
   }
 </style>
