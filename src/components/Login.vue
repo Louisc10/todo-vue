@@ -1,0 +1,96 @@
+<template>
+
+
+  <div class="container">
+    Login
+    <div class = "form">
+      <input type="email" v-model="email" placeholder="email">
+      <input type="password" v-model="password" placeholder="password">
+
+
+      <div class="err">{{error}}</div>
+
+      <input class="submit" type="submit" value="Login" @click="loginCheck">
+    </div>
+  </div>
+
+
+</template>
+
+
+
+<script>
+export default{
+  name: 'Login',
+  data(){
+    return{
+      email : '',
+      password : '',
+      error: ''
+
+    }
+
+  },
+  methods:{
+    loginCheck(){
+      // if(this.password.trim().length < 5){
+      //   this.error = "Password Must be at least 5 characters long"
+      // }
+      // else if(this.email.trim().length == 0){
+      //   this.error = "Email cannot be empty!"
+      // }
+      // else{
+        this.$router.replace({ name: "ToDo" });
+      // }
+    }
+  }
+}
+</script>
+
+
+<style>
+*{
+  margin:0
+}
+html{
+  margin: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.container{
+  border: 1px solid gray;
+  width: 100%;
+  height: 100%;
+  padding: 10px 10px;
+  box-shadow: 5px 10px gainsboro;
+  border-radius: 10px;
+}
+.err{
+  font-size: 12px;
+  color:red;
+  margin: 10px 0;
+}
+.form{
+  display: flex;
+  flex-direction: column;
+  width: 350px;
+  height: 300px;
+  align-items: center;
+  margin: 0;
+}
+.form > input[type=text],input[type=email],input[type=password]{
+  width: 70%;
+  margin: 12px 10px;
+  padding: 10px 5px;
+  border-radius: 10px;
+}
+.submit{
+  width: 100px;
+  height: 35px;
+  border-radius: 10px;
+  background-color: lightblue;
+  color: saddlebrown;
+}
+</style>

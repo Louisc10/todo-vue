@@ -45,7 +45,7 @@ export default{
         this.error = "Email cannot be empty!"
       }
       else{
-        this.$router.replace({ name: "ToDo" });
+        this.$router.replace({ name: "Login" });
       }
     }
   }

@@ -8,13 +8,15 @@
 import HelloWorld from './components/HelloWorld'
 import TodoList from './components/TodoList'
 import Register from './components/Register'
+import Login from './components/Login'
 
 export default {
   name: 'App',
   components: {
     HelloWorld,
     TodoList,
-    Register
+    Register,
+    Login
   }
 }
 </script>
