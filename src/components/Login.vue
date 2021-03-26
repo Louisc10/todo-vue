@@ -11,6 +11,7 @@
       <div class="err">{{error}}</div>
       {{data}}
       <input class="submit" type="submit" value="Login" @click="loginCheck">
+      <label class="toLogin">haven't made an account? <router-link class="link" to="/Register">Register here</router-link></label>
     </div>
   </div>
 
@@ -104,5 +105,13 @@ html{
   border-radius: 10px;
   background-color: lightblue;
   color: saddlebrown;
+}
+.toRegister{
+  margin-top: 10px;
+  font-size: 12px;
+}
+.link{
+  text-decoration: none;
+  color: dodgerblue;
 }
 </style>
