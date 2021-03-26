@@ -21,6 +21,8 @@
 
 
 <script>
+import axios from 'axios'
+
 export default{
   name: 'Register',
   data(){
@@ -45,6 +47,7 @@ export default{
         this.error = "Email cannot be empty!"
       }
       else{
+
         this.$router.replace({ name: "Login" });
       }
     }

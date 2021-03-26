@@ -9,7 +9,7 @@
 
 
       <div class="err">{{error}}</div>
-
+      {{data}}
       <input class="submit" type="submit" value="Login" @click="loginCheck">
     </div>
   </div>
@@ -18,30 +18,42 @@
 </template>
 
 
-
 <script>
+import axios from 'axios'
 export default{
   name: 'Login',
   data(){
     return{
       email : '',
       password : '',
-      error: ''
+      error: '',
+      data: null
 
     }
 
   },
   methods:{
-    loginCheck(){
-      // if(this.password.trim().length < 5){
-      //   this.error = "Password Must be at least 5 characters long"
-      // }
-      // else if(this.email.trim().length == 0){
-      //   this.error = "Email cannot be empty!"
-      // }
-      // else{
-        this.$router.replace({ name: "ToDo" });
-      // }
+    async loginCheck(){
+       await axios.post('https://localhost:5001/login',{
+         "email" : this.email,
+         "password" : this.password
+      }, {
+         headers: {'Access-Control-Allow-Origin': '*',
+           'Content-Type': 'application/json', 'accept' : 'text/plain'},
+      })
+          .then(response => this.login(response.data))
+          .catch( (err) => {
+            console.log(err)
+          })
+    },
+    login(data){
+      console.log(data)
+      if (data !== ""){
+        this.$router.replace("ToDo")
+      }
+      else{
+        this.error = "Wrong Email or Password"
+      }
     }
   }
 }
