@@ -52,6 +52,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: 'TodoList',
   data () {
@@ -114,7 +115,23 @@ export default {
       return this.todos.filter(todo => todo.completed).length != 0;
     }
   },
+  mounted:function(){
+    this.loadTodo();
+  },
   methods:{
+    async loadTodo(){
+      await axios.get('https://localhost:5001/api/todo', {
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+            'accept' : 'text/plain'
+          },
+        })
+        .then(response => this.todos = response.data)
+        .catch( (err) => {
+          console.log(err)
+        })
+    },
     addTodo(){
       if(this.newTodo.trim().length != 0){
         this.todos.push({
