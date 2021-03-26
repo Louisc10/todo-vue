@@ -8,7 +8,7 @@
     <div v-for="(todo, index) in filteredTodo" :key="todo.id" class="todo-item">
       <div class="todo-item-left">
         <input type="checkbox" v-model="todo.completed">
-        <div class="todo-item-label" :class="{completed : todo.completed}" v-if="!todo.editing" @dblclick="editTodo(todo)">
+        <div class="todo-item-label" :class="{completed : todo.completed}" @dblclick="editTodo(todo)" v-if="!todo.editing">
           {{todo.title}}
         </div>
         <input type="text" class="todo-item-input" @keyup.enter="updateTodo(todo)" @keyup.esc="cancleUpdate(todo)" @blur="updateTodo(todo)" v-if="todo.editing" v-model="todo.title" v-focus>
