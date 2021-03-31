@@ -3,14 +3,20 @@
     <h1>
       Testing TodoList
     </h1>
-    <input type="text" v-model="newTodo" placeholder="What need to do" class="todo-input" @keyup.enter="addTodo">
+    <div class="fill-data">
+      <input type="text" v-model="newTodo" placeholder="Title" class="todo-input">
+      <textarea cols="30" rows="10" v-model="todoDetail" placeholder="What need to do" class="todo-input" ></textarea>
+      <input type="button" value="Submit" class="submit-btn" @click="addTodo">
+    </div>
 
     <div v-for="(todo, index) in filteredTodo" :key="todo.id" class="todo-item">
       <div class="todo-item-left">
         <input type="checkbox" v-model="todo.completed">
-        <div class="todo-item-label" :class="{completed : todo.completed}" @dblclick="editTodo(todo)" v-if="!todo.editing">
-          {{todo.title}}
-        </div>
+        <router-link class="link" :to="{ name: 'detailtodo', params:{ id: todo.id }}">
+          <div class="todo-item-label" :class="{completed : todo.completed}" @dblclick="editTodo(todo)" v-if="!todo.editing">
+              {{todo.title}}
+          </div>
+        </router-link>
         <input type="text" class="todo-item-input" @keyup.enter="updateTodo(todo)" @keyup.esc="cancleUpdate(todo)" @blur="updateTodo(todo)" v-if="todo.editing" v-model="todo.title" v-focus>
       </div>
       <div class="remove-item" @click="removeTodo(index)">
@@ -58,6 +64,7 @@ export default {
   data () {
     return {
       newTodo: '',
+      todoDetail: '',
       idForTodo: 4,
       beforeEditCache: '',
       filter: 'all',
@@ -133,19 +140,31 @@ export default {
         })
     },
     addTodo(){
-      if(this.newTodo.trim().length != 0){
-        this.todos.push({
-          id: this.idForTodo,
-          title: this.newTodo,
-          completed: false,
-          editing: false,
-        });
+      if(this.newTodo.trim().length != 0 && this.todoDetail.trim().length != 0){
+        this.insertTodo();
         this.idForTodo = this.idForTodo + 1;
+        this.newTodo = '';
+        this.todoDetail = '';
       }
       else{
-        alert('No input')
+        alert('Fill All Field')
       }
-      this.newTodo = '';
+    },
+    async insertTodo() {
+      await axios.post('https://localhost:5001/api/todo/insert', {
+        "title": this.newTodo,
+        "content": this.todoDetail,
+        "completed": false,
+      }, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json', 'accept': 'text/plain'
+        },
+      }
+      ).then(response => location.reload())
+      .catch((err) => {
+        console.log(err)
+      })
     },
     editTodo(todo){
       this.beforeEditCache = todo.title;
@@ -176,6 +195,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  .fill-data{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
   .todo-input{
     width: 70%;
     padding: 10px 20px;
@@ -185,6 +211,13 @@ export default {
 
   .todo-input:focus{
     outline: 0;
+  }
+
+  .submit-btn{
+    padding: 10px 20px;
+    border-radius: 15px;
+    background-color: #aaa;
+    color: #fff;
   }
 
   .todo-item{
@@ -243,5 +276,10 @@ export default {
   .active{
     background-color: darkblue;
     color: white;
+  }
+
+  .link{
+    text-decoration: none;
+    color: black;
   }
 </style>
