@@ -9,7 +9,7 @@
       <input type="button" value="Submit" class="submit-btn" @click="addTodo">
     </div>
 
-    <div v-for="(todo, index) in filteredTodo" :key="todo.id" class="todo-item">
+    <div v-for="todo in filteredTodo" :key="todo.id" class="todo-item">
       <div class="todo-item-left">
         <input type="checkbox" v-model="todo.completed">
         <router-link class="link" :to="{ name: 'detailtodo', params:{ id: todo.id }}">
@@ -19,7 +19,7 @@
         </router-link>
         <input type="text" class="todo-item-input" @keyup.enter="updateTodo(todo)" @keyup.esc="cancleUpdate(todo)" @blur="updateTodo(todo)" v-if="todo.editing" v-model="todo.title" v-focus>
       </div>
-      <div class="remove-item" @click="removeTodo(index)">
+      <div class="remove-item" @click="removeTodo(todo.id)">
         &times;
       </div>
     </div>
@@ -158,7 +158,8 @@ export default {
       }, {
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json', 'accept': 'text/plain'
+          'Content-Type': 'application/json',
+          'accept': 'text/plain'
         },
       }
       ).then(response => location.reload())
@@ -180,8 +181,21 @@ export default {
       todo.title = this.beforeEditCache;
       todo.editing = false;
     },
-    removeTodo(index){
-      this.todos.splice(index, 1);
+    async removeTodo(id){
+      // console.log(id)
+      await axios.post('https://localhost:5001/api/todo/delete?id='+id, {
+
+      }, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+          'accept': 'text/plain'
+        },
+      }
+      ).then(response => location.reload())
+      .catch((err) => {
+        console.log(err)
+      })
     },
     checkAllTodos(){
       this.todos.forEach(todo => todo.completed = event.target.checked) ;

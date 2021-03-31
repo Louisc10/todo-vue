@@ -2,7 +2,7 @@
   <div>
     <fieldset>
       <legend>
-        <h1 v-if="!editingTitle" @click="editTitle()">{{todo.title}}</h1>
+        <h1 v-if="!editingTitle" class="input-title" @click="editTitle()">{{todo.title}}</h1>
         <input type="text" class="input-title" @keyup.enter="cancleEditTitle()" @keyup.esc="cancleEditTitle()" @blur="cancleEditTitle()" v-model="todo.title" v-if="editingTitle" v-focus>
       </legend>
       <div>
@@ -12,7 +12,28 @@
 
       <input type="checkbox" v-model="todo.completed" name="complete" id="complete">
       <label for="complete">Completed</label>
+
+      <div>
+        Owner: {{ owner.name }} ( {{ owner.email }} )
+      </div>
     </fieldset>
+
+    <input type="button" value="Update">
+
+    <fieldset>
+      <legend>
+        Access User
+      </legend>
+      <div v-for="user in users" :key="user.id" >
+        {{ user.email }}
+      </div>
+    </fieldset>
+    <div>
+        <div>
+          <input type="text" v-model="tempUser" class="input-content">
+        </div>
+        <input type="button" value="Add" @click="addAccess">
+    </div>
   </div>
 
 </template>
@@ -24,11 +45,15 @@ export default {
   data () {
     return {
       tempData: '',
+      tempUser: '',
       editingTitle: false,
       editingContent: false,
+      owner: {},
+      users: [],
       todo:{
         'id' : 1,
         'title': 'Dinish vue Screencast',
+        'content': 'Shiera sit amet dolor',
         'completed': false,
       }
     }
@@ -41,11 +66,11 @@ export default {
     }
   },
   mounted:function(){
-    this.loadTodo();
+    this.loadData();
   },
   methods:{
-    async loadTodo(){
-      await axios.get('https://localhost:5001/api/todo/TO001', {
+    async loadData(){
+      await axios.get('https://localhost:5001/api/todo/'+this.$route.params.id, {
           headers: {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
@@ -60,7 +85,32 @@ export default {
     todof(response){
       console.log("Test")
       console.log(response.data)
-      this.todo = response.data
+      this.todo = response.data.todo
+      this.owner = response.data.userOwner
+      this.users = response.data.userAllowed
+    },
+    async getUserByEmail(){
+      await axios.get('https://localhost:5001/api/user/'+this.tempUser, {
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+            'accept' : 'text/plain'
+          },
+        })
+        .then(response => this.addAccess(response))
+        .catch( (err) => {
+          console.log(err)
+        })
+    },
+    addAccess(response){
+      alert(response.data)
+      if (response.data != null){
+        var temp = {
+          email: this.tempUser
+        }
+        this.users.push(temp)
+      }
+      this.tempUser = ''
     },
     editTitle(){
       this.tempData = this.todo.title
@@ -95,6 +145,7 @@ export default {
     margin-block-end: 0.67em;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
+    margin: 0 10px;
     font-weight: bold;
     text-align: center;
   }
